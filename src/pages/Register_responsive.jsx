@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { API_ENDPOINTS } from '../config/api';
 
 export default function Register() {
   const [username, setUsername] = useState('');
@@ -12,7 +13,7 @@ export default function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5001/api/auth/register', { username, email, password });
+      await axios.post(API_ENDPOINTS.REGISTER, { username, email, password });
       navigate('/');
     } catch (err) {
       setError(err.response.data.error);

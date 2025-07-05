@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
+import { API_ENDPOINTS } from '../config/api';
 
 export default function AddAssetForm({ assets }) {
   const [assetId, setAssetId] = useState('');
@@ -10,7 +11,11 @@ export default function AddAssetForm({ assets }) {
   const handleSubmit = async () => {
     try {
       const userId = localStorage.getItem('userId');
-      await axios.post(`http://localhost:5001/api/${type}`, { userId, assetId, quantity: parseInt(quantity) });
+      await axios.post(type === 'buy' ? API_ENDPOINTS.BUY : API_ENDPOINTS.SELL, { 
+        userId, 
+        assetId, 
+        quantity: parseInt(quantity) 
+      });
       window.location.reload();
     } catch (err) {
       setError(err.response.data.error);

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { API_ENDPOINTS } from '../config/api';
 import { 
   LineChart, 
   Line, 
@@ -24,7 +25,7 @@ export default function PriceGraph({ assetId, assetName }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await axios.get(`http://localhost:5001/api/graphdata/${assetId}`);
+        const res = await axios.get(API_ENDPOINTS.GRAPH_DATA(assetId));
         if (res.data && res.data.length > 0) {
           const formattedData = res.data.map(item => ({
             time: new Date(item.timestamp).toLocaleDateString('en-US', { 

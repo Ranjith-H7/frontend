@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { API_ENDPOINTS } from '../config/api';
 
 export default function Profile({ userId, onBalanceUpdate }) {
   const [user, setUser] = useState(null);
@@ -14,8 +15,8 @@ export default function Profile({ userId, onBalanceUpdate }) {
     const fetchUserData = async () => {
       try {
         const [userRes, transactionsRes] = await Promise.all([
-          axios.get(`http://localhost:5001/api/portfolio/${userId}`),
-          axios.get(`http://localhost:5001/api/transactions/${userId}`)
+          axios.get(API_ENDPOINTS.PORTFOLIO(userId)),
+          axios.get(API_ENDPOINTS.TRANSACTIONS(userId))
         ]);
         setUser(userRes.data);
         setTransactions(transactionsRes.data);
@@ -45,7 +46,7 @@ export default function Profile({ userId, onBalanceUpdate }) {
         return;
       }
       
-      const response = await axios.post('http://localhost:5001/api/add-balance', {
+      const response = await axios.post(API_ENDPOINTS.ADD_BALANCE, {
         userId,
         amount
       });

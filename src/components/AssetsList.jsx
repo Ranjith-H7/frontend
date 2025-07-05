@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
+import { API_ENDPOINTS } from '../config/api';
 
 export default function AssetsList() {
   const [assets, setAssets] = useState([]);
@@ -8,7 +9,7 @@ export default function AssetsList() {
   useEffect(() => {
     const fetchAssets = async () => {
       try {
-        const response = await axios.get('http://localhost:5001/api/assets');
+        const response = await axios.get(API_ENDPOINTS.ASSETS);
         setAssets(response.data);
         setLoading(false);
       } catch (error) {

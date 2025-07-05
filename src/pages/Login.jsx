@@ -1,23 +1,34 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { API_ENDPOINTS } from '../config/api';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError('');
+    
     try {
-      const res = await axios.post('http://localhost:5001/api/auth/login', { email, password });
+      const res = await axios.post(API_ENDPOINTS.LOGIN, { email, password });
+      
+      // Store user data in localStorage (based on your API response format)
       localStorage.setItem('userId', res.data.userId);
-      localStorage.setItem('username', res.data.username);
+      localStorage.setItem('username', res.data.username || '');
       localStorage.setItem('email', res.data.email);
+      // Note: Your API doesn't return token or balance in login response
+      
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response.data.error);
+      setError(err.response?.data?.error || 'Login failed. Please try again.');
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -58,9 +69,10 @@ export default function Login() {
           
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white py-2 sm:py-3 rounded-md hover:bg-blue-600 transition-colors text-sm sm:text-base font-medium"
+            disabled={loading}
+            className="w-full bg-blue-500 text-white py-2 sm:py-3 rounded-md hover:bg-blue-600 disabled:bg-blue-300 disabled:cursor-not-allowed transition-colors text-sm sm:text-base font-medium"
           >
-            Sign In
+            {loading ? 'Signing In...' : 'Sign In'}
           </button>
         </form>
         
