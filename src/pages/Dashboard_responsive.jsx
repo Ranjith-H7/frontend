@@ -167,7 +167,7 @@ export default function Dashboard() {
               </button>
             </div>
             
-            <AddAssetForm assets={assets} />
+            <AddAssetForm assets={assets} onTransactionComplete={fetchData} />
             
             {/* Portfolio */}
             <div className="mb-4 sm:mb-6">

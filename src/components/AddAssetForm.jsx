@@ -1,24 +1,53 @@
 import { useState } from 'react';
-import axios from 'axios';
-import { API_ENDPOINTS } from '../config/api';
+import ApiService from '../config/apiService';
 
-export default function AddAssetForm({ assets }) {
+export default function AddAssetForm({ assets, onTransactionComplete }) {
   const [assetId, setAssetId] = useState('');
   const [quantity, setQuantity] = useState('');
   const [type, setType] = useState('buy');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
+    if (!assetId || !quantity || parseInt(quantity) <= 0) {
+      setError('Please select an asset and enter a valid quantity');
+      return;
+    }
+
+    setLoading(true);
+    setError('');
+    
     try {
       const userId = localStorage.getItem('userId');
-      await axios.post(type === 'buy' ? API_ENDPOINTS.BUY : API_ENDPOINTS.SELL, { 
+      const tradeData = { 
         userId, 
         assetId, 
         quantity: parseInt(quantity) 
-      });
-      window.location.reload();
+      };
+
+      if (type === 'buy') {
+        await ApiService.buyAsset(tradeData);
+      } else {
+        await ApiService.sellAsset(tradeData);
+      }
+
+      // Clear form
+      setAssetId('');
+      setQuantity('');
+      setError('');
+      
+      // Notify parent component to refresh data
+      if (onTransactionComplete) {
+        onTransactionComplete();
+      } else {
+        window.location.reload();
+      }
     } catch (err) {
-      setError(err.response.data.error);
+      console.error('Transaction error:', err);
+      const errorMessage = err.response?.data?.error || err.response?.data?.message || err.message || 'Transaction failed';
+      setError(errorMessage);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -105,16 +134,16 @@ export default function AddAssetForm({ assets }) {
             
             <button
               onClick={handleSubmit}
-              disabled={!assetId || !quantity}
+              disabled={!assetId || !quantity || parseInt(quantity) <= 0 || loading}
               className={`px-4 py-2 rounded-md font-medium text-sm sm:text-base transition-colors ${
-                !assetId || !quantity
+                !assetId || !quantity || parseInt(quantity) <= 0 || loading
                   ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   : type === 'buy'
                   ? 'bg-green-500 text-white hover:bg-green-600'
                   : 'bg-red-500 text-white hover:bg-red-600'
               }`}
             >
-              {type === 'buy' ? 'Buy' : 'Sell'}
+              {loading ? 'Processing...' : (type === 'buy' ? 'Buy' : 'Sell')}
             </button>
           </div>
 

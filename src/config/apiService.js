@@ -80,12 +80,18 @@ class ApiService {
 
   // Trading
   static async buyAsset(tradeData) {
+    console.log('Attempting to buy asset:', tradeData);
+    console.log('Buy endpoint:', API_ENDPOINTS.BUY);
     const response = await apiClient.post(API_ENDPOINTS.BUY, tradeData);
+    console.log('Buy response:', response.data);
     return response.data;
   }
 
   static async sellAsset(tradeData) {
+    console.log('Attempting to sell asset:', tradeData);
+    console.log('Sell endpoint:', API_ENDPOINTS.SELL);
     const response = await apiClient.post(API_ENDPOINTS.SELL, tradeData);
+    console.log('Sell response:', response.data);
     return response.data;
   }
 
